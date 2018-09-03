@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController, IonicPage, MenuController } from 'ionic-angular';
 import { LoginDTO } from '../../models/login.dto';
+import { AuthService } from '../../services/auth/auth.service';
 
 @IonicPage()
 @Component({
@@ -14,7 +15,10 @@ export class HomePage {
     password: ""
   };
 
-  constructor(public navCtrl: NavController, public menu: MenuController) {
+  constructor(
+    public navCtrl: NavController, 
+    public menu: MenuController,
+    public auth: AuthService) {
     
   }
 
@@ -28,8 +32,12 @@ export class HomePage {
   
 
   loginAction(){
-    console.log(this.login)
-    this.navCtrl.setRoot('CategoriasPage')
+    this.auth.authenticate(this.login)
+      .subscribe(response => {
+        console.log(response.headers.get('Authorization'));
+        this.navCtrl.setRoot('CategoriasPage')
+      },
+      error => {});
   }
 
 }
