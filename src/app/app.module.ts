@@ -33,10 +33,10 @@ import { AuthInterceptorProvider } from '../interceptors/auth-interceptor';
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     AuthInterceptorProvider,
     ErrorInterceptorProvider,
-    CategoriaService,
-    ClienteService,
     AuthService,
-    StorageService
+    StorageService,
+    CategoriaService,
+    ClienteService
   ]
 })
 export class AppModule {}
