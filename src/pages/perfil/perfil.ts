@@ -3,7 +3,6 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { StorageService } from '../../services/auth/storage.service';
 import { ClienteDTO } from '../../models/cliente.dto';
 import { ClienteService } from '../../services/domain/cliente.service';
-import { API_CONFIG } from '../../config/api.config';
 
 @IonicPage()
 @Component({
@@ -28,8 +27,15 @@ export class PerfilPage {
           this.cliente = response;
           this.getImageIfExists();
         },
-        error => {})
-      }
+        error => {
+          if(error.status == 403) {
+            this.navCtrl.setRoot('HomePage');
+          }
+        }
+      )
+    } else {
+      this.navCtrl.setRoot('HomePage');
+    }
   }
 
   getImageIfExists(){
