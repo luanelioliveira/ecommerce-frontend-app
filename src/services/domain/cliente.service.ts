@@ -25,4 +25,15 @@ export class ClienteService {
         return `${API_CONFIG.bucketBaseUrl}/cp${id}.jpg`
     }
 
+    insert(cliente : ClienteDTO) {
+        return this.http.post(
+            `${API_CONFIG.baseUrl}/clients`,
+            cliente,
+            {
+                observe : 'response',
+                responseType: 'text'
+            }
+        )
+    }
+
 }
