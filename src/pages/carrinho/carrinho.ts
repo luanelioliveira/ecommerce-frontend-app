@@ -1,8 +1,7 @@
+import { ProdutoDTO } from './../../models/produto.dto';
 import { CartItem } from './../../models/cart-item';
-import { Cart } from './../../models/cart';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { StorageService } from '../../services/auth/storage.service';
 import { ProdutoService } from '../../services/domain/produto.service';
 import { CartService } from '../../services/domain/cart.service';
 
@@ -39,5 +38,24 @@ export class CarrinhoPage {
     }
   }
 
+  adicionarItem(produto: ProdutoDTO) {
+    this.items = this.cartService.addProduct(produto).items;
+  }
+
+  excluirItem(produto: ProdutoDTO) {
+    this.items = this.cartService.removeProduct(produto).items;
+  }
+
+  excluirTodoItem(produto: ProdutoDTO) {
+    this.items = this.cartService.removeAllProduct(produto).items;
+  }
+
+  total(): number {
+    return this.cartService.total();
+  }
+
+  continuarComprando() {
+    this.navCtrl.setRoot('CategoriasPage');
+  }
 
 }
