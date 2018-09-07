@@ -31,7 +31,7 @@ export class PedidoPagamentoPage {
 
   proximaPagina() {
     this.pedido.payment = this.formGroup.value;
-    console.log(this.pedido);
+    this.navCtrl.push('PedidoConfirmacaoPage', {pedido: this.pedido});
   }
 
 }
