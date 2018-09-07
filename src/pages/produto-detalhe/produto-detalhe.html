@@ -10,7 +10,12 @@
 </ion-header>
 
 <ion-content padding>
-  <ion-card>
+    <ion-fab top right edge>
+      <button navPush="CarrinhoPage" ion-fab mini>
+        <ion-icon name="cart"></ion-icon>
+      </button>
+    </ion-fab>
+    <ion-card>
     <img [src]="item?.imageUrl || 'assets/imgs/product-blank.jpg'">
     <ion-card-content>
       <ion-card-title>
