@@ -41,4 +41,8 @@ export class ProdutosPage {
     }
   }
 
+  showDetalhe(produtoId: string) {
+    this.navCtrl.push('ProdutoDetalhePage');
+  }
+
 }
