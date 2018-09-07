@@ -6,6 +6,7 @@ import { CartItem } from './../../models/cart-item';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { ClienteDTO } from '../../models/cliente.dto';
+import { PedidoService } from '../../services/domain/pedido.service';
 
 @IonicPage()
 @Component({
@@ -22,15 +23,16 @@ export class PedidoConfirmacaoPage {
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams,
-    public carService: CartService,
-    public clientService: ClienteService) {
+    public cartService: CartService,
+    public clientService: ClienteService,
+    public pedidoService: PedidoService) {
     this.pedido = this.navParams.get('pedido');
     console.log(this.pedido);
   }
 
   ionViewDidLoad() {
 
-    this.cartItems = this.carService.getCart().items;
+    this.cartItems = this.cartService.getCart().items;
     this.clientService.findById(this.pedido.client.id)
       .subscribe(response => {
         this.cliente = response as ClienteDTO;
@@ -48,15 +50,24 @@ export class PedidoConfirmacaoPage {
   }
 
   total(){
-    return this.carService.total();
+    return this.cartService.total();
   }
 
-  proximaPagina() {
-
+  checkout() {
+    this.pedidoService.insert(this.pedido)
+      .subscribe(response => {
+        this.cartService.createOrClearCart();
+        console.log(response.headers.get('location'));
+      },
+      error => {
+        if (error.status == 403) {
+          this.navCtrl.setRoot('HomePage');
+        }
+      });
   }
 
-  voltar() {
-
+  back() {
+    this.navCtrl.setRoot('CarrinhoPage');
   }
 
 }
