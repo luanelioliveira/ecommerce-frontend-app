@@ -54,7 +54,7 @@ export class PedidoEnderecoPage {
 
   proximaPagina(endereco: EnderecoDTO) {
     this.pedido.shippingAddress = {id: endereco.id};
-    console.log(this.pedido);
+    this.navCtrl.push('PedidoPagamentoPage', {'pedido': this.pedido});
   }
 
 
