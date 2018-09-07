@@ -1,3 +1,5 @@
+import { ClienteService } from './../../services/domain/cliente.service';
+import { StorageService } from './../../services/auth/storage.service';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { EnderecoDTO } from '../../models/endereco.dto';
@@ -11,44 +13,29 @@ export class PedidoEnderecoPage {
 
   items: EnderecoDTO[];
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(
+    public navCtrl: NavController, 
+    public navParams: NavParams,
+    public storage: StorageService,
+    public clienteService: ClienteService) {
   }
 
   ionViewDidLoad() {
-    this.items = [
-      {
-        id: "1",
-        address: "Rua Adalberto",
-        number: "544",
-        complement: "Sobrado",
-        district: "Glória",
-        zipCode: "89219-160",
-        city: {
-          id: "1",
-          name: "Joinville",
-          state: {
-            id: "1",
-            name: "Santa Catarina"
+    let localUser = this.storage.getLocalUser();
+    if (localUser && localUser.email) {
+      this.clienteService.findByEmail(localUser.email)
+        .subscribe(response => {
+          this.items = response['addresses'];
+        },
+        error => {
+          if(error.status == 403) {
+            this.navCtrl.setRoot('HomePage');
           }
         }
-      },
-      {
-        id: "2",
-        address: "Rua Felix",
-        number: "537",
-        complement: "APTO 401",
-        district: "Costa e Silva",
-        zipCode: "89218-321",
-        city: {
-          id: "1",
-          name: "Joinville",
-          state: {
-            id: "1",
-            name: "Santa Catarina"
-          }
-        }
-      },
-    ]
+      )
+    } else {
+      this.navCtrl.setRoot('HomePage');
+    }
   }
 
 }
