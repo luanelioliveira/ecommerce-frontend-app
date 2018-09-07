@@ -58,4 +58,8 @@ export class CarrinhoPage {
     this.navCtrl.setRoot('CategoriasPage');
   }
 
+  finalizarPedido() {
+    this.navCtrl.push('PedidoEnderecoPage');
+  }
+
 }
