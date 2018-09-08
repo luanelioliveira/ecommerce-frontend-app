@@ -23,6 +23,10 @@ export class CategoriasPage {
   }
 
   ionViewDidLoad() {
+    this.loadCategorias();
+  }
+
+  loadCategorias() {
     let loading = this.presentLoading();
     this.categoriaService.findAll()
       .subscribe(response => {
@@ -45,6 +49,13 @@ export class CategoriasPage {
   
     loading.present();
     return loading;
+  }
+
+  doRefresh(refresher) {
+    setTimeout(() => {
+      this.loadCategorias();
+      refresher.complete();
+    }, 1000);
   }
 
 }
