@@ -4,6 +4,7 @@ import { StorageService } from '../../services/auth/storage.service';
 import { ClienteDTO } from '../../models/cliente.dto';
 import { ClienteService } from '../../services/domain/cliente.service';
 import { CameraOptions, Camera } from '@ionic-native/camera';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @IonicPage()
 @Component({
@@ -15,12 +16,17 @@ export class PerfilPage {
   cliente: ClienteDTO;
   picture: string;
   cameraOn: boolean = false;
-
+  profileImage;
+  
   constructor(public navCtrl: NavController, 
     public navParams: NavParams,
     public storage: StorageService,
     public clienteService: ClienteService,
-    public camera: Camera ) {
+    public camera: Camera,
+    public sanitizer: DomSanitizer ) {
+
+      this.profileImage = 'assets/imgs/avatar-blank.png';
+
   }
 
   ionViewDidLoad() {
@@ -39,8 +45,7 @@ export class PerfilPage {
           if(error.status == 403) {
             this.navCtrl.setRoot('HomePage');
           }
-        }
-      )
+        });
     } else {
       this.navCtrl.setRoot('HomePage');
     }
@@ -48,9 +53,25 @@ export class PerfilPage {
 
   getImageIfExists(){
     this.clienteService.getImageFromBucket(this.cliente.id)
-      .subscribe(reponse => {
+      .subscribe(response => {
         this.cliente.imageUrl = this.clienteService.getUrlImage(this.cliente.id);
-      })
+        this.blobToDataURL(response).then(dataUrl => {
+          let str : string = dataUrl as string;
+          this.profileImage = this.sanitizer.bypassSecurityTrustUrl(str);
+        });
+      },
+      error => {
+        this.profileImage = 'assets/imgs/avatar-blank.png';
+      });
+  }
+
+  blobToDataURL(blob) {
+    return new Promise((fulfill, reject) => {
+        let reader = new FileReader();
+        reader.onerror = reject;
+        reader.onload = (e) => fulfill(reader.result);
+        reader.readAsDataURL(blob);
+    })
   }
 
   getCameraPicture() {
@@ -65,16 +86,39 @@ export class PerfilPage {
     }
     
     this.camera.getPicture(options).then((imageData) => {
-     this.picture = 'data:image/png;base64,' + imageData;
-     this.cameraOn = false;
-    }, (error) => {});
+      this.picture = 'data:image/png;base64,' + imageData;
+      this.cameraOn = false;
+    }, (error) => {
+      this.cameraOn = false;     
+    });
+  }
+
+  getGalleryPicture() {
+    
+    this.cameraOn  = true;
+
+    const options: CameraOptions = {
+      quality: 100,
+      sourceType: this.camera.PictureSourceType.PHOTOLIBRARY,
+      destinationType: this.camera.DestinationType.FILE_URI,
+      encodingType: this.camera.EncodingType.PNG,
+      mediaType: this.camera.MediaType.PICTURE
+    }
+    
+    this.camera.getPicture(options).then((imageData) => {
+      this.picture = 'data:image/png;base64,' + imageData;
+      this.cameraOn = false;
+    }, (error) => {
+      this.cameraOn = false;     
+    });
   }
 
   sendPicture() {
+    this.profileImage = this.picture;
     this.clienteService.uploadPicture(this.picture)
       .subscribe(response => {
         this.picture = null;
-        this.loadPerfil();
+        this.getImageIfExists();
       },
       error => {});
   }
